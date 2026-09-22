@@ -30,7 +30,7 @@ func _ready() -> void:
 
 	var project_theme: Theme = ThemeDB.get_project_theme()
 	if not icon_size:
-		icon_size = project_theme.default_font_size + 4 #2 * 
+		icon_size = project_theme.default_font_size + 4 #2 *
 	_init_actions()
 
 
