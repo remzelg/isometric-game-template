@@ -2,9 +2,14 @@ extends Node
 
 enum Section { AUDIO }
 
-const CONTROLS_FILE: String = "user://controls.tres"
+## Actions the Settings UI lets the player remap.
+const REMAPPABLE_ACTIONS: Array[StringName] = [
+	&"move_up", &"move_left", &"move_down", &"move_right", &"ui_back"
+]
+
 const SETTINGS_FILE: String = "user://settings.cfg"
 const DEFAULT_SETTINGS_FILE: String = "res://default_settings.cfg"
+const CONTROLS_SECTION: String = "Controls"
 
 # Timer is used to prevent fast repeated saving of cfg files
 var _timer: Timer
@@ -16,30 +21,32 @@ func _ready() -> void:
 
 
 #region control remapping
-func load_controls() -> GUIDERemappingConfig:
+func load_controls() -> void:
 	print("Loading controls from file...")
-	if not ResourceLoader.exists(CONTROLS_FILE):
-		print("No saved controls data in ", CONTROLS_FILE)
-		return GUIDERemappingConfig.new()
-
-	var data: GUIDERemappingConfig = ResourceLoader.load(CONTROLS_FILE)
-	if not is_instance_valid(data):
-		printerr("Failed to load controls!")
-		reset_controls()
-		return GUIDERemappingConfig.new()
-	print(data)
-	return data
+	load_settings()
+	if not _settings.has_section(CONTROLS_SECTION):
+		print("No saved controls data")
+		return
+	for action: StringName in REMAPPABLE_ACTIONS:
+		var event: InputEvent = _settings.get_value(CONTROLS_SECTION, action, null)
+		if event:
+			InputMap.action_erase_events(action)
+			InputMap.action_add_event(action, event)
 
 
-func save_controls(data: GUIDERemappingConfig) -> void:
-	var err: int = ResourceSaver.save(data, CONTROLS_FILE)
-	if err:
-		printerr("Error saving controls '%s'" % str(err))
-	data.take_over_path(CONTROLS_FILE)
+func save_controls() -> void:
+	load_settings()
+	for action: StringName in REMAPPABLE_ACTIONS:
+		var events: Array[InputEvent] = InputMap.action_get_events(action)
+		if not events.is_empty():
+			_settings.set_value(CONTROLS_SECTION, action, events[0])
+	save_settings()
 
 
 func reset_controls() -> void:
-	save_controls(GUIDERemappingConfig.new())
+	load_settings()
+	_settings.erase_section(CONTROLS_SECTION)
+	save_settings()
 
 
 #endregion

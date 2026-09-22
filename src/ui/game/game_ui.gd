@@ -8,9 +8,6 @@ extends UiPage
 # ui.control.global_position =
 #		get_tree().current_scene.get_canvas_transform() * node.global_position
 
-# The action used by virtual controls to pause game
-const UI_BACK_GUIDE_ACTION: GUIDEAction = preload("res://src/input/_template/ui_back.tres")
-
 var _pushed_state: bool = false
 
 
@@ -19,10 +16,6 @@ func show_ui() -> void:
 		_pushed_state = false
 		ui.pop_state()
 	super()
-
-
-func _ready() -> void:
-	UI_BACK_GUIDE_ACTION.triggered.connect(_pause)
 
 
 func _input(event: InputEvent) -> void:

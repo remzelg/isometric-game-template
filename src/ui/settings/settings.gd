@@ -3,18 +3,17 @@ extends UiPage
 
 const REMAP_INPUT_BUTTON_SCENE: PackedScene = preload("res://src/ui/controls/remap_input_button.tscn")
 
-@export var remap_mapping_contexts: Array[GUIDEMappingContext]
-@export var icon_size: int:
-	set(value):
-		icon_size = value
-		_formatter = GUIDEInputFormatter.new(icon_size)
+## Movement actions are shown together as one compact row instead of one row each.
+const MOVE_ACTIONS: Array[StringName] = [&"move_up", &"move_left", &"move_down", &"move_right"]
+
+const ACTION_DISPLAY_NAMES: Dictionary[StringName, String] = {
+	&"ui_back": "Back",
+}
 
 var _audio_bus_name_idx_mapping: Dictionary = {}
-var _remapper: GUIDERemapper = GUIDERemapper.new()
-var _formatter: GUIDEInputFormatter
-var _remapping_config: GUIDERemappingConfig
 
 @onready var v_box_container: VBoxContainer = $ContentMarginContainer/VBoxContainer
+@onready var _input_panel: PopupPanel = %InputPanel
 
 
 func _ready() -> void:
@@ -24,13 +23,10 @@ func _ready() -> void:
 	# give top vbox a min x size so sliders get some room
 	v_box_container.custom_minimum_size.x = get_viewport_rect().size.x * 0.5
 	Settings.load_settings()
+	Settings.load_controls()
 	%Back.pressed.connect(go_back)
 	_init_audio_sliders()
 	_update_audio_sliders.call_deferred()
-
-	var project_theme: Theme = ThemeDB.get_project_theme()
-	if not icon_size:
-		icon_size = project_theme.default_font_size + 4 #2 *
 	_init_actions()
 
 
@@ -77,57 +73,43 @@ func _update_audio_sliders() -> void:
 
 #region Control remapping
 func _init_actions() -> void:
-	_remapping_config = Settings.load_controls()
-	GUIDE.set_remapping_config(_remapping_config)
-	_remapper.initialize(remap_mapping_contexts, _remapping_config)
+	var move_row: HBoxContainer = HBoxContainer.new()
+	move_row.add_theme_constant_override("separation", 4)
+	for action: StringName in MOVE_ACTIONS:
+		move_row.add_child(_make_remap_button(action))
+	_add_action_row("Move", move_row)
 
-	for context: GUIDEMappingContext in remap_mapping_contexts:
-		var items: Array[GUIDERemapper.ConfigItem] = _remapper.get_remappable_items(context)
-		for item: GUIDERemapper.ConfigItem in items:
-			var action_label: Label = Label.new()
-			action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			action_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			action_label.text = item.display_name
-			action_label.custom_minimum_size.y = icon_size
-
-			var remap_input: Control = REMAP_INPUT_BUTTON_SCENE.instantiate()
-			remap_input.remapper = _remapper
-			remap_input.formatter = _formatter
-			remap_input.item = item
-			%KeyboardMouseActions.add_child(action_label)
-			%KeyboardMouseActions.add_child(remap_input)
-			remap_input.button.pressed.connect(_get_new_input_for_action.bind(item))
-			remap_input.button.custom_minimum_size = Vector2(icon_size, icon_size)
+	for action: StringName in Settings.REMAPPABLE_ACTIONS:
+		if action in MOVE_ACTIONS:
+			continue
+		_add_action_row(ACTION_DISPLAY_NAMES.get(action, action.capitalize()), _make_remap_button(action))
 
 
-func _get_new_input_for_action(item: GUIDERemapper.ConfigItem) -> void:
-	%InputPanel.item = item
-	%InputPanel.size = get_viewport().get_visible_rect().size / 2
-	%InputPanel.visible = true
+func _add_action_row(label_text: String, control: Control) -> void:
+	var action_label: Label = Label.new()
+	action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	action_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	action_label.text = label_text
+	%KeyboardMouseActions.add_child(action_label)
+	%KeyboardMouseActions.add_child(control)
 
-	await %InputPanel.popup_hide
-	var input: GUIDEInput = %InputPanel.input
-	if input == null:
+
+func _make_remap_button(action: StringName) -> Button:
+	var remap_button: Button = REMAP_INPUT_BUTTON_SCENE.instantiate()
+	remap_button.action = action
+	remap_button.pressed.connect(_get_new_input_for_action.bind(action, remap_button))
+	return remap_button
+
+
+func _get_new_input_for_action(action: StringName, button: Button) -> void:
+	var new_input: InputEvent = await _input_panel.start(action)
+	if new_input == null:
 		return
 
-	# check for collisions
-	var collisions: Array[GUIDERemapper.ConfigItem] = _remapper.get_input_collisions(item, input)
-
-	# if any collision is from a non-bindable mapping, we cannot use this input
-	if collisions.any(func(it: GUIDERemapper.ConfigItem) -> bool: return not it.is_remappable):
-		return
-
-	# unbind the colliding entries.
-	for collision: GUIDERemapper.ConfigItem in collisions:
-		_remapper.set_bound_input(collision, null)
-
-	# now bind the new input
-	_remapper.set_bound_input(item, input)
-
-	# we apply & save at every change
-	var config: GUIDERemappingConfig = _remapper.get_mapping_config()
-	GUIDE.set_remapping_config(config)
-	Globals.controls_changed.emit(config)
+	InputMap.action_erase_events(action)
+	InputMap.action_add_event(action, new_input)
+	button.refresh_text()
+	Globals.controls_changed.emit()
 
 
 #endregion

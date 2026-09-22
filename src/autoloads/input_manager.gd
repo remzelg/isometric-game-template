@@ -4,27 +4,19 @@ signal input_device_changed(device: InputDevice)
 
 enum InputDevice { UNKNOWN, KEYBOARD_MOUSE, CONTROLLER }
 
-@export var default_mapping_context: GUIDEMappingContext
-
-var input_device_mapping_context: GUIDEMappingContext = load(
-	"res://src/input/_template/input_device_mapping_context.tres"
-)
-var controller_action: GUIDEAction = load("res://src/input/_template/switch_to_controller.tres")
-var keyboard_and_mouse_action: GUIDEAction = load(
-	"res://src/input/_template/switch_to_keyboard_and_mouse.tres"
-)
-var last_input_device: InputDevice
+var last_input_device: InputDevice = InputDevice.UNKNOWN
 
 
-func _ready() -> void:
-	GUIDE.enable_mapping_context(default_mapping_context)
-	GUIDE.enable_mapping_context(input_device_mapping_context)
-	controller_action.triggered.connect(_last_used.bind(InputDevice.CONTROLLER))
-	keyboard_and_mouse_action.triggered.connect(_last_used.bind(InputDevice.KEYBOARD_MOUSE))
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey or event is InputEventMouseButton or event is InputEventMouseMotion:
+		_last_used(InputDevice.KEYBOARD_MOUSE)
+	elif event is InputEventJoypadButton:
+		_last_used(InputDevice.CONTROLLER)
+	elif event is InputEventJoypadMotion and absf(event.axis_value) > 0.3:
+		_last_used(InputDevice.CONTROLLER)
 
 
 func _last_used(device: InputDevice) -> void:
 	if last_input_device != device:
-		#print("input device changed: ", InputDevice.keys()[device])
 		last_input_device = device
 		input_device_changed.emit(device)
