@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://ll0jxrphjoxv"]
+
+[ext_resource type="PackedScene" uid="uid://b4rw4g700pbdd" path="res://src/scenes/game.tscn" id="1_t8qtc"]
+[ext_resource type="PackedScene" uid="uid://cwniaevqg577a" path="res://src/scenes/_debug/test_board.tscn" id="2_mursh"]
+[ext_resource type="Script" uid="uid://b6fb7gqxpty5x" path="res://src/scenes/ai.gd" id="2_rtuxt"]
+[ext_resource type="PackedScene" uid="uid://1jbyww2pa04h" path="res://src/scenes/characters/badger.tscn" id="3_f8ali"]
+[ext_resource type="Script" uid="uid://dscnyaiywigim" path="res://src/scenes/display.gd" id="4_umrka"]
+[ext_resource type="PackedScene" uid="uid://c2vla70bqpmye" path="res://src/scenes/characters/boar.tscn" id="4_xwl5t"]
+[ext_resource type="PackedScene" uid="uid://dnxt7viiw8dc" path="res://src/scenes/characters/stag.tscn" id="5_rtuxt"]
+
+[node name="Game" unique_id=1918049690 instance=ExtResource("1_t8qtc")]
+
+[node name="Board" parent="." index="0" unique_id=682028098 instance=ExtResource("2_mursh")]
+
+[node name="Display" type="Node2D" parent="." index="1" unique_id=1907198503]
+script = ExtResource("4_umrka")
+
+[node name="Badger" parent="Display" index="0" unique_id=1139903437 instance=ExtResource("3_f8ali")]
+character_id = "abadger"
+
+[node name="Boar" parent="Display" index="1" unique_id=2054141014 instance=ExtResource("4_xwl5t")]
+character_id = "bbboar"
+
+[node name="Boar2" parent="Display" index="2" unique_id=1666102365 instance=ExtResource("4_xwl5t")]
+character_id = "bboar"
+
+[node name="Stag" parent="Display" index="3" unique_id=1347133977 instance=ExtResource("5_rtuxt")]
+character_id = "astag"
+
+[node name="AI" type="Node" parent="." index="2" unique_id=1224092468]
+script = ExtResource("2_rtuxt")
+
+[editable path="Board"]
+[editable path="Board/Map"]

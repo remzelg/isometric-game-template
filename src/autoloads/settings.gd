@@ -2,6 +2,9 @@ extends Node
 
 enum Section { AUDIO }
 
+# Determines the size of the item components and their item slots for inventory toy
+var item_size: Vector2i = Vector2i(60,60)
+
 ## Actions the Settings UI lets the player remap.
 const REMAPPABLE_ACTIONS: Array[StringName] = [
 	&"move_up", &"move_left", &"move_down", &"move_right", &"ui_back"
