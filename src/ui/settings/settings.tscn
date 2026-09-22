@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://c31bw3nk5ujvg"]
+
+[ext_resource type="Script" uid="uid://de7x8mivrhisn" path="res://src/ui/settings/settings.gd" id="1_dabjx"]
+[ext_resource type="Script" uid="uid://dsa1dnifd6w32" path="res://addons/guide/guide_mapping_context.gd" id="2_v7gdq"]
+[ext_resource type="Resource" uid="uid://v5u0dyabni7e" path="res://src/input/default_mapping_context.tres" id="3_b2afy"]
+[ext_resource type="Script" uid="uid://cejoahrxsimnx" path="res://src/ui/controls/input_panel.gd" id="4_7bxk6"]
+[ext_resource type="Script" uid="uid://db27ccgomq455" path="res://addons/guide/remapping/guide_input_detector.gd" id="5_64hdo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qy0v7"]
+bg_color = Color(0.162066, 0.162066, 0.162065, 1)
+
+[node name="Settings" type="MarginContainer" unique_id=2124181525 node_paths=PackedStringArray("default_focus_control")]
+process_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_dabjx")
+remap_mapping_contexts = Array[ExtResource("2_v7gdq")]([ExtResource("3_b2afy")])
+default_focus_control = NodePath("ContentMarginContainer/HBoxContainer/Back")
+
+[node name="ContentMarginContainer" type="MarginContainer" parent="." unique_id=1031392192]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentMarginContainer" unique_id=1140762562]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="SettingsLabel" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=201738569]
+layout_mode = 2
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=1531401950]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="VolumeLabel" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=2116828142]
+layout_mode = 2
+text = "Volume"
+horizontal_alignment = 1
+
+[node name="Audio" type="GridContainer" parent="ContentMarginContainer/VBoxContainer" unique_id=810512460]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 2
+
+[node name="MasterLabel" type="Label" parent="ContentMarginContainer/VBoxContainer/Audio" unique_id=173348277]
+layout_mode = 2
+text = "Main"
+
+[node name="Master" type="HSlider" parent="ContentMarginContainer/VBoxContainer/Audio" unique_id=458613533]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 100.0
+
+[node name="MusicLabel" type="Label" parent="ContentMarginContainer/VBoxContainer/Audio" unique_id=117618828]
+layout_mode = 2
+text = "Music"
+
+[node name="Music" type="HSlider" parent="ContentMarginContainer/VBoxContainer/Audio" unique_id=413651863]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 100.0
+
+[node name="SfxLabel" type="Label" parent="ContentMarginContainer/VBoxContainer/Audio" unique_id=71826610]
+layout_mode = 2
+text = "Effects"
+
+[node name="SFX" type="HSlider" parent="ContentMarginContainer/VBoxContainer/Audio" unique_id=234383956]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 100.0
+ticks_on_borders = true
+
+[node name="Spacer2" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=553518778]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="ControlsLabel" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=1462952221]
+layout_mode = 2
+text = "Controls"
+horizontal_alignment = 1
+
+[node name="KeyboardMouseActions" type="GridContainer" parent="ContentMarginContainer/VBoxContainer" unique_id=195879917]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ContentMarginContainer" unique_id=1544226688]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="Back" type="Button" parent="ContentMarginContainer/HBoxContainer" unique_id=2016237512]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back"
+
+[node name="InputPanel" type="PopupPanel" parent="." unique_id=680121084]
+unique_name_in_owner = true
+oversampling_override = 1.0
+initial_position = 2
+size = Vector2i(320, 160)
+always_on_top = true
+min_size = Vector2i(320, 160)
+theme_override_styles/panel = SubResource("StyleBoxFlat_qy0v7")
+script = ExtResource("4_7bxk6")
+
+[node name="MarginContainer" type="MarginContainer" parent="InputPanel" unique_id=638397955]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 320.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="KeyboardMouseLabel" type="Label" parent="InputPanel/MarginContainer" unique_id=1803900647]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Waiting for keyboard or mouse input"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="GUIDEInputDetector" type="Node" parent="InputPanel" unique_id=1202395818]
+unique_name_in_owner = true
+script = ExtResource("5_64hdo")
+detection_countdown_seconds = 0.1

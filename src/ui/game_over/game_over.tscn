@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://d2r7hsgb6cfpy"]
+
+[ext_resource type="Script" uid="uid://bcpcoikhnwoff" path="res://src/ui/game_over/game_over.gd" id="1_go"]
+
+[node name="GameOver" type="MarginContainer" unique_id=723394663 node_paths=PackedStringArray("default_focus_control")]
+process_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_go")
+default_focus_control = NodePath("ContentMarginContainer/VBoxContainer/Buttons/Retry")
+
+[node name="ContentMarginContainer" type="MarginContainer" parent="." unique_id=937517601]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentMarginContainer" unique_id=294402978]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="GameOverLabel" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=974231808]
+layout_mode = 2
+text = "Game Over"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Label" parent="ContentMarginContainer/VBoxContainer" unique_id=992551603]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="ContentMarginContainer/VBoxContainer" unique_id=953089563]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Retry" type="Button" parent="ContentMarginContainer/VBoxContainer/Buttons" unique_id=873239060]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Retry"
+
+[node name="MainMenu" type="Button" parent="ContentMarginContainer/VBoxContainer/Buttons" unique_id=626239443]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Main Menu"

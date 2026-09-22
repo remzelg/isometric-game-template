@@ -1,0 +1,40 @@
+@tool
+extends UiPage
+
+
+func show_ui() -> void:
+	ui.pause_move_to_front()
+	visible = true
+
+
+func _ready() -> void:
+	call_deferred("_connect_buttons")
+
+
+func _connect_buttons() -> void:
+	if ui:
+		%Resume.pressed.connect(_resume)
+		%Settings.pressed.connect(ui.go_to.bind("Settings"))
+		%Quit.pressed.connect(_main_menu)
+
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_back"):
+		get_viewport().set_input_as_handled()
+		_resume()
+
+
+func _resume() -> void:
+	if ui:
+		ui.go_to("Game")
+	get_tree().paused = false
+
+
+func _main_menu() -> void:
+	var result: bool = await ui.show_popup_dialog("Quit to main menu?")
+	if not result:
+		return
+	get_tree().set_deferred("paused", false)
+	ui.fade_to_scene("res://src/main.tscn")
